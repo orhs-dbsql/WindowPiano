@@ -11,11 +11,12 @@ Adafruit_MPR121 cap2 = Adafruit_MPR121();
 TMRpcm tmrpcm;
 
 // Keeps track of the last pins touched
-// so we know when buttons are 'released'
 uint16_t lasttouched = 0;
 uint16_t currtouched = 0;
 uint16_t lasttouched2 = 0;
 uint16_t currtouched2 = 0;
+
+//Setup. Only runs once. Initialize everything
 void setup() {
   tmrpcm.speakerPin = 9;
   Serial.begin(9600);
@@ -26,11 +27,12 @@ void setup() {
   
   Serial.println("Adafruit MPR121 cap1acitive Touch sensor test"); 
 
+  //code to check if the touch sensor is there
   if (!cap1.begin(0x5A)) {
     Serial.println("MPR121 not found, check wiring?");
     while (1);
   }else{
-    Serial.println("Found 1");
+    Serial.println("Found Touch Sensor");
   }
   if (!cap2.begin(0x5B)) {
     Serial.println("MPR121 not found, check wiring?");
@@ -38,11 +40,13 @@ void setup() {
   }
   Serial.println("MPR121 found!");
 
+  //code to check if the sd card reader is there
   if (!SD.begin(SD_ChipSelectPin)) {
     Serial.println("SD fail");
     return;
   }
 
+  //set the speaker volume
   tmrpcm.setVolume(6);
   
 }
@@ -76,7 +80,9 @@ void loop() {
   {
     if(base[i]-temp[i]>15){
       Serial.println(i);
-      tmrpcm.play(String(i)+”.wav");
+      //If a button is pressed, then play the associated wav file
+      //Ex: if 3rd button is pressed, play 3.wav on the sd card reader
+      tmrpcm.play(String(i%12)+”.wav");
 
     }
   }
